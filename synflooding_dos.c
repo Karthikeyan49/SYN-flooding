@@ -24,46 +24,46 @@ struct pseudoTCPPacket
     __uint16_t len;
 } tcp_psedohdr;
 
-// ip header checksum
-static unsigned short compute_checksum(unsigned short *addr, unsigned int count)
-{
-    register unsigned long sum = 0;
-    while (count > 1)
-    {
-        sum += *addr++;
-        count -= 2;
-    }
-    // if any bytes left, pad the bytes and add
-    if (count > 0)
-    {
-        sum += ((*addr) & htons(0xFF00));
-    }
-    // Fold sum to 16 bits: add carrier to result
-    while (sum >> 16)
-    {
-        sum = (sum & 0xffff) + (sum >> 16);
-    }
-    // one's complement
-    sum = ~sum;
-    return ((unsigned short)sum);
-}
+// // ip header checksum
+// static unsigned short compute_checksum(unsigned short *addr, unsigned int count)
+// {
+//     register unsigned long sum = 0;
+//     while (count > 1)
+//     {
+//         sum += *addr++;
+//         count -= 2;
+//     }
+//     // if any bytes left, pad the bytes and add
+//     if (count > 0)
+//     {
+//         sum += ((*addr) & htons(0xFF00));
+//     }
+//     // Fold sum to 16 bits: add carrier to result
+//     while (sum >> 16)
+//     {
+//         sum = (sum & 0xffff) + (sum >> 16);
+//     }
+//     // one's complement
+//     sum = ~sum;
+//     return ((unsigned short)sum);
+// }
 
-// tcp header checksum
-unsigned short CheckSum(unsigned short *buffer, int size)
-{
-    unsigned long cksum = 0;
-    while (size > 1)
-    {
-        cksum += *buffer++;
-        size -= sizeof(unsigned short);
-    }
-    if (size)
-        cksum += *(unsigned char *)buffer;
+// // tcp header checksum
+// unsigned short CheckSum(unsigned short *buffer, int size)
+// {
+//     unsigned long cksum = 0;
+//     while (size > 1)
+//     {
+//         cksum += *buffer++;
+//         size -= sizeof(unsigned short);
+//     }
+//     if (size)
+//         cksum += *(unsigned char *)buffer;
 
-    cksum = (cksum >> 16) + (cksum & 0xffff);
-    cksum += (cksum >> 16);
-    return (unsigned short)(~cksum);
-}
+//     cksum = (cksum >> 16) + (cksum & 0xffff);
+//     cksum += (cksum >> 16);
+//     return (unsigned short)(~cksum);
+// }
 
 // Checksum function for IP and TCP headers
 unsigned short csum(unsigned short *buf, int nwords) {
@@ -236,7 +236,6 @@ int main(int argc, char *arg[])
             printf("\tSRC PORT: %d\n", ntohs(tcphdr->th_sport));
 
             tcp_send_reset(tcphdr->th_ack, iphdr->ip_dst.s_addr, iphdr->ip_src.s_addr, tcphdr->th_dport, tcphdr->th_sport);
-            printf("\nhello\n");
             tcp_send_reset((htonl(ntohl(tcphdr->th_seq) + 1)), iphdr->ip_src.s_addr, iphdr->ip_dst.s_addr, tcphdr->th_sport, tcphdr->th_dport);
         }
     }
